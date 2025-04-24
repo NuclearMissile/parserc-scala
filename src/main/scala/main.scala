@@ -21,13 +21,10 @@ object JsonParser extends RegexParsers {
   private def arr: Parser[List[Any]] =
     "[" ~> repsep(value, ",") <~ "]"
 
-  private def stringLiteral: Parser[String] = {
-    "\"" ~> regex("""(\\.|[^"\\])*""".r) <~ "\"" ^^ {
-      str => unescapeString(str)
-    }
-  }
+  private def stringLiteral: Parser[String] =
+    "\"" ~> regex("""(\\.|[^"\\])*""".r) <~ "\"" ^^ { str => unescape(str) }
 
-  private def unescapeString(str: String): String = {
+  private def unescape(str: String): String = {
     val buf = new StringBuilder
     var i = 0
     while (i < str.length) {
@@ -65,7 +62,6 @@ object JsonParser extends RegexParsers {
   }
 }
 
-// Usage example
 object JsonTest {
   def main(args: Array[String]): Unit = {
     val jsonString =
